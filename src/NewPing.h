@@ -246,7 +246,7 @@
 			uint8_t _triggerBit;
 			uint8_t _echoBit;
 		//#if defined(PARTICLE) || defined(__IMXRT1052__) || defined(__IMXRT1062__)
-		#if defined(PARTICLE) || defined(TEENSYDUINO)
+		#if defined(PARTICLE) || defined(__IMXRT1062__)
 			#if !defined(portModeRegister)
 				#if defined (STM32F10X_MD)
 					#define portModeRegister(port)     ( &(port->CRL) )

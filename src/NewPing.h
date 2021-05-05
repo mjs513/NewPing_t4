@@ -243,12 +243,14 @@
 			static void timer_ms_cntdwn();
 	#endif
 	#if DO_BITWISE == true
+		uint8_t _triggerPin;
+		uint8_t _echoPin;
 		#if defined(__IMXRT1062__)
 			uint32_t _triggerBit;
 			uint32_t _echoBit;
 		#else
-			uint8_t _triggerPin;
-			uint8_t _echoPin;
+			uint8_t _triggerBit;
+			uint8_t _echoBit;
 		#endif
 		
 		#if defined(PARTICLE) || defined(__IMXRT1062__)

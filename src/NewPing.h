@@ -185,13 +185,7 @@
 	#define NewPingConvert(echoTime, conversionFactor) (max(((unsigned int)echoTime + conversionFactor / 2) / conversionFactor, (echoTime ? 1 : 0)))
 
 	// Detect non-AVR microcontrollers (Teensy 3.x, Arduino DUE, etc.) and don't use port registers or timer interrupts as required.
-	#if defined(__IMXRT1062__)
-		#undef  PING_OVERHEAD
-		#define PING_OVERHEAD 1
-		#undef  PING_TIMER_OVERHEAD
-		#define PING_TIMER_OVERHEAD 1
-		#define DO_BITWISE false
-	#elif (defined (__arm__) && (defined (TEENSYDUINO) || defined (PARTICLE)))
+	#if ( (defined (TEENSYDUINO) || defined (PARTICLE)))
 		#undef  PING_OVERHEAD
 		#define PING_OVERHEAD 1
 		#undef  PING_TIMER_OVERHEAD
@@ -249,10 +243,17 @@
 			static void timer_ms_cntdwn();
 	#endif
 	#if DO_BITWISE == true
+		uint8_t _triggerPin;
+		uint8_t _echoPin;
+		#if defined(__IMXRT1062__)
+			uint32_t _triggerBit;
+			uint32_t _echoBit;
+		#else
 			uint8_t _triggerBit;
 			uint8_t _echoBit;
-		//#if defined(PARTICLE) || defined(__IMXRT1052__) || defined(__IMXRT1062__)
-		#if defined(PARTICLE) ||
+		#endif
+		
+		#if defined(PARTICLE) || defined(__IMXRT1062__)
 			#if !defined(portModeRegister)
 				#if defined (STM32F10X_MD)
 					#define portModeRegister(port)     ( &(port->CRL) )

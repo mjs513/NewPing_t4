@@ -27,7 +27,7 @@ NewPing::NewPing(uint8_t trigger_pin, uint8_t echo_pin, unsigned int max_cm_dist
 
 	set_max_distance(max_cm_distance); // Call function to set the max sensor distance.
 
-#if (defined (__arm__) && (defined (TEENSYDUINO) || defined(PARTICLE))) || DO_BITWISE != true
+#if ((defined (TEENSYDUINO) || defined(PARTICLE))) || DO_BITWISE != true
 	pinMode(echo_pin, INPUT);     // Set echo pin to input (on Teensy 3.x (ARM), pins default to disabled, at least one pinMode() is needed for GPIO mode).
 	pinMode(trigger_pin, OUTPUT); // Set trigger pin to output (on Teensy 3.x (ARM), pins default to disabled, at least one pinMode() is needed for GPIO mode).
 #endif
@@ -234,7 +234,7 @@ void NewPing::set_max_distance(unsigned int max_cm_distance) {
 	void (*intFunc2)();
 	unsigned long _ms_cnt_reset;
 	volatile unsigned long _ms_cnt;
-	#if defined(__arm__) && (defined (TEENSYDUINO) || defined(PARTICLE))
+	#if (defined (TEENSYDUINO) || defined(PARTICLE))
 		IntervalTimer itimer;
 	#endif
 
@@ -246,7 +246,7 @@ void NewPing::set_max_distance(unsigned int max_cm_distance) {
 	#if defined (__AVR_ATmega32U4__) // Use Timer4 for ATmega32U4 (Teensy/Leonardo).
 		OCR4C = min((frequency>>2) - 1, 255); // Every count is 4uS, so divide by 4 (bitwise shift right 2) subtract one, then make sure we don't go over 255 limit.
 		TIMSK4 = (1<<TOIE4);                  // Enable Timer4 interrupt.
-	#elif defined (__arm__) && defined (TEENSYDUINO) // Timer for Teensy 3.x
+	#elif defined (TEENSYDUINO) // Timer for Teensy 3.x
 		itimer.begin(userFunc, frequency);           // Really simple on the Teensy 3.x, calls userFunc every 'frequency' uS.
 	#elif defined (__arm__) && defined (PARTICLE)    // Timer for Particle devices
 		itimer.begin(userFunc, frequency, uSec);     // Really simple on the Particle, calls userFunc every 'frequency' uS.
@@ -266,7 +266,7 @@ void NewPing::set_max_distance(unsigned int max_cm_distance) {
 	#if defined (__AVR_ATmega32U4__) // Use Timer4 for ATmega32U4 (Teensy/Leonardo).
 		OCR4C = 249;           // Every count is 4uS, so 1ms = 250 counts - 1.
 		TIMSK4 = (1<<TOIE4);   // Enable Timer4 interrupt.
-	#elif defined (__arm__) && defined (TEENSYDUINO)        // Timer for Teensy 3.x
+	#elif defined (TEENSYDUINO)        // Timer for Teensy 3.x
 		itimer.begin(NewPing::timer_ms_cntdwn, 1000);       // Set timer to 1ms (1000 uS).
 	#elif defined (__arm__) && defined (PARTICLE)           // Timer for Particle
 		itimer.begin(NewPing::timer_ms_cntdwn, 1000, uSec); // Set timer to 1ms (1000 uS).
@@ -280,7 +280,7 @@ void NewPing::set_max_distance(unsigned int max_cm_distance) {
 	void NewPing::timer_stop() { // Disable timer interrupt.
 	#if defined (__AVR_ATmega32U4__) // Use Timer4 for ATmega32U4 (Teensy/Leonardo).
 		TIMSK4 = 0;
-	#elif defined (__arm__) && (defined (TEENSYDUINO) || defined (PARTICLE)) // Timer for Teensy 3.x & Particle
+	#elif (defined (TEENSYDUINO) || defined (PARTICLE)) // Timer for Teensy 3.x & Particle
 		itimer.end();
 	#else
 		TIMSK2 &= ~(1<<OCIE2A);
@@ -304,7 +304,7 @@ void NewPing::set_max_distance(unsigned int max_cm_distance) {
 		ASSR &= ~(1<<AS2);            // Set clock, not pin.
 		TCCR2 = (1<<WGM21 | 1<<CS22); // Set Timer2 to CTC mode, prescaler to 64 (4uS/count, 4uS-1020uS range).
 		TCNT2 = 0;                    // Reset Timer2 counter.
-	#elif defined (__arm__) && (defined (TEENSYDUINO) || defined (PARTICLE))
+	#elif (defined (TEENSYDUINO) || defined (PARTICLE))
 		timer_stop(); // Stop the timer.
 	#else
 		timer_stop();        // Disable Timer2 interrupt.
